@@ -280,6 +280,9 @@ class _NativeTextInputState extends State<NativeTextInput> {
   double _lineHeight = 22.0;
   double _contentHeight = 22.0;
 
+  // The last text synced from the Flutter side to the Platform side
+  String? _syncedText;
+
   @override
   void initState() {
     super.initState();
@@ -307,21 +310,26 @@ class _NativeTextInputState extends State<NativeTextInput> {
   }
 
   Future<void> _controllerListener() async {
-    final MethodChannel channel = await _channel.future;
-    channel.invokeMethod(
-      "setText",
-      {"text": widget.controller?.text ?? ''},
-    );
-    channel.invokeMethod("getContentHeight").then((value) {
-      if (value != null && value != _contentHeight) {
-        setState(() {
-          _contentHeight = value;
-        });
-      }
-    });
+    final text = widget.controller?.text ?? '';
+    if (text != _syncedText) {
+      final MethodChannel channel = await _channel.future;
+      _syncedText = text;
+      channel.invokeMethod(
+        "setText",
+        {"text": widget.controller?.text ?? ''},
+      );
+      channel.invokeMethod("getContentHeight").then((value) {
+        if (value != null && value != _contentHeight) {
+          setState(() {
+            _contentHeight = value;
+          });
+        }
+      });
+    }
   }
 
   Widget _platformView(BoxConstraints layout) {
+    _syncedText = _effectiveController.text;
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return PlatformViewLink(
@@ -482,7 +490,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
       params = {
         ...params,
         "placeholderFontFamily":
-        widget.iosOptions?.placeholderStyle?.fontFamily.toString(),
+            widget.iosOptions?.placeholderStyle?.fontFamily.toString(),
       };
     }
 
@@ -592,6 +600,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
 
   void _inputValueChanged(String? text, int? lineIndex) async {
     if (text != null) {
+      _syncedText = text;
       _effectiveController.text = text;
       if (widget.onChanged != null) widget.onChanged!(text);
 
