@@ -403,14 +403,14 @@ class _NativeTextInputState extends State<NativeTextInput> {
         MethodChannel("flutter_native_text_input$nativeViewId")
           ..setMethodCallHandler(_onMethodCall);
     channel.invokeMethod("getLineHeight").then((value) {
-      if (context.mounted && value != null) {
+      if (mounted && value != null) {
         setState(() {
           _lineHeight = value;
         });
       }
     });
     channel.invokeMethod("getContentHeight").then((value) {
-      if (context.mounted && value != null) {
+      if (mounted && value != null) {
         setState(() {
           _contentHeight = value;
         });
