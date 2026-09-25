@@ -12,10 +12,10 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Henry Leung' => 'hk.eleven@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'flutter_native_text_input/Sources/flutter_native_text_input/**/*.{h,m}'
+  s.public_header_files = 'flutter_native_text_input/Sources/flutter_native_text_input/include/**/*.h'
   s.dependency 'Flutter'
 
-  s.ios.deployment_target = '9.0'
+  s.ios.deployment_target = '13.0'
 end
 
