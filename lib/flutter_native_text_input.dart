@@ -293,6 +293,8 @@ class _NativeTextInputState extends State<NativeTextInput> {
 
   @override
   void dispose() {
+    // The native view outlives this State by at least a frame; stop routing its callbacks here.
+    _channel.future.then((channel) => channel.setMethodCallHandler(null));
     _effectiveFocusNode.removeListener(_focusNodeListener);
     widget.controller?.removeListener(_controllerListener);
 
@@ -620,6 +622,7 @@ class _NativeTextInputState extends State<NativeTextInput> {
 
   void _scrollIntoView() {
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       context.findRenderObject()!.showOnScreen(
             duration: _caretAnimationDuration,
             curve: _caretAnimationCurve,
